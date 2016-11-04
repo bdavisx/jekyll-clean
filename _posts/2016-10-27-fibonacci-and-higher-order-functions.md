@@ -28,12 +28,58 @@ function you create is not tail recursive and you mark it with `tailrec`, you wi
 from the compiler. I created a test using [Spek] (https://jetbrains.github.io/spek/), then copied
 the expected values from a website.
  
-<script src="https://gist.github.com/bdavisx/8816e95f39376c1dfd6d8eec904be598.js"></script>
+{% highlight kotlin linenos %}
+import org.jetbrains.spek.api.Spek
+import org.jetbrains.spek.api.dsl.describe
+import org.jetbrains.spek.api.dsl.it
+import org.junit.Assert
+
+fun fibonacci(n: Int): Int {
+    tailrec fun loop(n: Int, previous: Int, current: Int): Int {
+        return when(n) {
+            0 -> previous
+            else -> loop(n-1, current, previous+current)
+        }
+    }
+
+    return loop(n, 0, 1)
+}
+
+class Ch02Test : Spek({
+    describe("fibonacci function") {
+        val expectedValues = arrayOf(0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610,
+            987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811)
+
+        it("should return the correct first value") {
+            assertEquals(0, fibonacci(0))
+        }
+
+        it("should return the correct values in expectedValues") {
+            for( i in 0..(expectedValues.size-1) ) {
+                val value = fibonacci(i)
+                assertEquals(expectedValues[i], value)
+            }
+        }
+    }
+})  
+{% endhighlight %}
 
 I considered an `if/else` statement in the `loop()` inner function, but I think the `when()` version
 is more compact and [idiomatic](https://kotlinlang.org/docs/reference/idioms.html).
  
-<script src="https://gist.github.com/bdavisx/0dcd00c9abf7da97ceecd3ac655beedc.js"></script>
+{% highlight kotlin linenos %}
+fun fibonacci2(n: Int): Int {
+    tailrec fun loop(n: Int, previous: Int, current: Int): Int {
+        return if( n == 0 ) {
+            previous
+        } else {
+            loop(n-1, current, previous+current)
+        }
+    }
+
+    return loop(n, 0, 1)
+}
+{% endhighlight %}
  
 # Exercise 2.2 - isSorted Higher Order Function
 
@@ -50,7 +96,50 @@ does not need the array or ordered parameters to be passed to it.
 Outside the local `loop()` function (line 19), we first do a check, if the array is empty, we 
 just return true, otherwise we start the recursive `loop()` call. 
 
-<script src="https://gist.github.com/bdavisx/4c363707c1cd041098398fd3efe2b5e0.js"></script>
+{% highlight kotlin linenos %}
+import org.jetbrains.spek.api.Spek
+import org.jetbrains.spek.api.dsl.describe
+import org.jetbrains.spek.api.dsl.it
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+
+fun <A> isSorted(array: Array<A>, ordered: (A,A) -> Boolean): Boolean {
+    tailrec fun loop(current: Int): Boolean {
+        when(current) {
+            array.size -> return true
+            else -> {
+                if(!ordered(array[current-1], array[current])) { return false }
+
+                return loop(current+1)
+            }
+        }
+    }
+
+    if(array.size == 0) return true
+
+    return loop(1)
+}
+
+class IsSortedTest: Spek({
+    describe("isSorted function") {
+        val sortedArray = arrayOf(2, 4, 6, 8, 10)
+        val emptyArray = arrayOf<Int>()
+        val unsortedArray = arrayOf(5,4,3)
+
+        it("Should return true for a sorted array") {
+            assertTrue(isSorted(sortedArray, { lhs, rhs -> lhs < rhs }))
+        }
+
+        it("Should return true for an empty array") {
+            assertTrue(isSorted(emptyArray, { lhs, rhs -> lhs < rhs }))
+        }
+
+        it("Should return false for an unsorted array") {
+            assertFalse(isSorted(unsortedArray, { lhs, rhs -> lhs < rhs }))
+        }
+    }
+})
+{% endhighlight %}
 
 ## Using a Higher Order Function with Testing
 
@@ -60,5 +149,27 @@ run the tests for both functions. The `runFibonacciTests()` (line 5) function ta
 a function that gets passed and int and returns an int. That signature is the same as both of the
 fibonacci functions, so we can just pass those to the function to run the tests (lines 19-20).
   
-<script src="https://gist.github.com/bdavisx/dc9582296694bb07cb849ccc73e6a7c6.js"></script>
+{% highlight kotlin linenos %}
+class Ch02Test : Spek({
+    val expectedValues = arrayOf(0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610,
+        987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811)
 
+    fun runFibonacciTests(function: (Int) -> Int) {
+        it("should return the correct first value") {
+            assertEquals(0, function(0))
+        }
+
+        it("should return the correct values in expectedValues") {
+            for( i in 0..(expectedValues.size-1) ) {
+                val value = function(i)
+                assertEquals(expectedValues[i], value)
+            }
+        }
+    }
+
+    describe("fibonacci functions") {
+        runFibonacciTests(::fibonacci)
+        runFibonacciTests(::fibonacci2)
+    }
+})  
+{% endhighlight %}

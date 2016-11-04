@@ -1,7 +1,7 @@
 # Jekyll configuration
 
-name: I Don't Know
-description: Something, something, something about programming
+name: Some Programming Blog
+description: Stuff about software development
 
 # url is currently only used only for the RSS feed in feed.xml
 url: https://localhost

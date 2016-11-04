@@ -11,10 +11,11 @@ value - and "split" it into two functions - the first one will take the first pa
 function that takes the second parameter and returns a value. The first function doesn't do 
 anything except return the second function.
  
-On line 6, we specify that the `function` parameter is a function that takes an A and B, and
-returns a C: <br/>`function: (A,B) -> C`<br/> We then say that we're returning a function that
-takes an A, and returns a function that takes a B and returns a C:<br/> `(A) -> ((B) -> C)`<br/> We
-are basically declaring two functions in the return declaration portion of the signature.
+On line 6, we specify that the parameter named `function` is a function that takes an A and B, and
+returns a C: <br/>`function: (A,B) -> C`<br/> We then say that we're returning a function that takes
+an A, and that function that we are returning, returns a function that takes a B and returns a
+C:<br/> `(A) -> ((B) -> C) `<br/> We are basically declaring two functions in the return declaration
+portion of the signature.
 
 Line 7 is where we declare and return the function that the user wants - a function that takes an A
 and returns another function. We don't name the local functions that we are returning. On line 8 we
@@ -22,7 +23,7 @@ get to the function that does the actual 'work' of the curry - on line 9 the ori
 the user passed in is called, along with the parameters a and b that were supplied earlier. Notice
 how we are using parameters that were passed in 3 different function calls.
 
-```kotlin
+{% highlight kotlin linenos %}
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -52,7 +53,7 @@ fun functionToBeCurried(a: Int, b: Double): String {
     val result = a * b
     return "$result"
 }
-```
+{% endhighlight %}
 
 For the test, on line 26 we define the function that will have the `curry()` method applied. It
 takes an Int and Double and returns a String. In the test itself, on line 17, we pass the
@@ -70,7 +71,7 @@ When that function is run, we make the first call - `function(a)` then call pass
 `(b)`. It might look a little strange - you can see the calls separated out in the
 `uncurrySeparate()` function - look at lines 14 and 15.
 
-```kotlin
+{% highlight kotlin linenos %}
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -99,5 +100,6 @@ class UncurryTest: Spek({
         }
     }
 })
-```
+{% endhighlight %}
+
 

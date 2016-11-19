@@ -4,19 +4,19 @@ name: Some Programming Blog
 description: Stuff about software development
 
 # url is currently only used only for the RSS feed in feed.xml
-url: https://localhost
+url: http://billdavis.ws
 
 # baseurl will often be '', but for a project page on gh-pages, it needs to
 # be the project name.
 # *** IMPORTANT: If your local "jekyll serve" throws errors change this to '' or
 #     run it like so: jekyll serve --baseurl=''
-baseurl: /jekyll-clean
+baseurl: ''
 
 # This can be '' to hide the Github nav button
 github: 'bdavisx/jekyll-clean'
 
 # Set this to your UA-# value, or '' to disable the block completely
-gaaccount: ''
+gaaccount: 'UA-48307574-1'
 
 # The 'comments' setting enables comments. You'll need to select either
 # disqus or isso below to choose a comment system. Individual posts can
@@ -32,8 +32,12 @@ disqus: ''
 permalink: /:year/:month/:title
 paginate: 3
 
+#highlighter: rouge
 highlighter: rouge
-markdown: kramdown
+#markdown: kramdown
+markdown: redcarpet
 gems: ['jekyll-paginate']
 
 exclude: ['README.md', 'LICENSE']
+
+plugins_dir: plugins
